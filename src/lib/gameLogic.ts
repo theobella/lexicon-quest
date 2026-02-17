@@ -38,21 +38,10 @@ export const GAME_CONFIG = {
 };
 
 // Small sample list for development
-const SAMPLE_WORDS: Word[] = [
-    { term: 'Serendipity', definition: 'The occurrence and development of events by chance in a happy or beneficial way.', partOfSpeech: 'noun' },
-    { term: 'Ephemeral', definition: 'Lasting for a very short time.', partOfSpeech: 'adjective' },
-    { term: 'Ubiquitous', definition: 'Present, appearing, or found everywhere.', partOfSpeech: 'adjective' },
-    { term: 'Mellifluous', definition: '(of a voice or words) sweet or musical; pleasant to hear.', partOfSpeech: 'adjective' },
-    { term: 'Quixotic', definition: 'Exceedingly idealistic; unrealistic and impractical.', partOfSpeech: 'adjective' },
-    { term: 'Pernicious', definition: 'Having a harmful effect, especially in a gradual or subtle way.', partOfSpeech: 'adjective' },
-    { term: 'Sycophant', definition: 'A person who acts obsequiously toward someone important in order to gain advantage.', partOfSpeech: 'noun' },
-    { term: 'Obfuscate', definition: 'Render obscure, unclear, or unintelligible.', partOfSpeech: 'verb' },
-    { term: 'Cacophony', definition: 'A harsh, discordant mixture of sounds.', partOfSpeech: 'noun' },
-    { term: 'Ennui', definition: 'A feeling of listlessness and dissatisfaction arising from a lack of occupation or excitement.', partOfSpeech: 'noun' },
-];
+import { DICTIONARY } from './dictionary';
 
 export const getRandomWord = (): Word => {
-    return SAMPLE_WORDS[Math.floor(Math.random() * SAMPLE_WORDS.length)];
+    return DICTIONARY[Math.floor(Math.random() * DICTIONARY.length)];
 };
 
 export const generateQuestion = (difficulty: Difficulty): Question => {
@@ -60,10 +49,37 @@ export const generateQuestion = (difficulty: Difficulty): Question => {
     let options: string[] = [];
 
     if (difficulty === Difficulty.HARD) {
-        options = []; // No options for hard mode
+        // HARD: Same Part of Speech
+        const candidates = DICTIONARY
+            .filter(w => w.term !== target.term && w.partOfSpeech === target.partOfSpeech);
+
+        // Fallback to random if not enough matches
+        const pool = candidates.length >= 2 ? candidates : DICTIONARY.filter(w => w.term !== target.term);
+
+        const distractors = pool
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 2)
+            .map(w => w.term);
+
+        options = [target.term, ...distractors].sort(() => 0.5 - Math.random());
+    } else if (difficulty === Difficulty.EASY) {
+        // EASY: Different Part of Speech & Different First Letter (if possible)
+        const candidates = DICTIONARY
+            .filter(w => w.term !== target.term && w.partOfSpeech !== target.partOfSpeech);
+
+        // Fallback
+        const pool = candidates.length >= 2 ? candidates : DICTIONARY.filter(w => w.term !== target.term);
+
+        const distractors = pool
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 2)
+            .map(w => w.term);
+
+        options = [target.term, ...distractors].sort(() => 0.5 - Math.random());
     } else {
+        // MEDIUM: Random logic (existing)
         // Select 2 distractors
-        const distractors = SAMPLE_WORDS
+        const distractors = DICTIONARY
             .filter(w => w.term !== target.term)
             .sort(() => 0.5 - Math.random())
             .slice(0, 2)

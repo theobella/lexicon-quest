@@ -28,7 +28,7 @@ const DifficultySelection = () => {
                     onClick={() => handleSelect(Difficulty.EASY)}
                 >
                     <span className={styles.diffTitle}>Easy</span>
-                    <span className={styles.diffDesc}>3 Choices • {GAME_CONFIG[Difficulty.EASY].timeLimit}s</span>
+                    <span className={styles.diffDesc}>Distinct Choices • {GAME_CONFIG[Difficulty.EASY].timeLimit}s</span>
                 </button>
 
                 <button
@@ -44,7 +44,7 @@ const DifficultySelection = () => {
                     onClick={() => handleSelect(Difficulty.HARD)}
                 >
                     <span className={styles.diffTitle}>Hard</span>
-                    <span className={styles.diffDesc}>Type the word • {GAME_CONFIG[Difficulty.HARD].timeLimit}s</span>
+                    <span className={styles.diffDesc}>Similar Choices • {GAME_CONFIG[Difficulty.HARD].timeLimit}s</span>
                 </button>
             </div>
         </div>
